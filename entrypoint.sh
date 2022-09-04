@@ -1,7 +1,4 @@
-#!/bin/bash
-
-set -euo pipefail
-IFS=$(printf ' \n\t')
+#!/bin/sh
 
 debug() {
   if [ "${ACTIONS_RUNNER_DEBUG:-}" = "true" ]; then
