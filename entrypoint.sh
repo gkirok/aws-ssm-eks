@@ -32,10 +32,10 @@ fi
 
 debug "Cluster: $INPUT_CLUSTER_NAME";
 
-if [ -n "${INPUT_BASTION_NAME:-}" ]; then
+if [ -n "${INPUT_BASTION_NAME}" ]; then
   debug "Bastion: $INPUT_BASTION_NAME";
   export INSTANCE_ID=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=${INPUT_BASTION_NAME}" "Name=instance-state-code,Values=16" --output text --query 'Reservations[*].Instances[*].InstanceId')
-elif [ -n "${INPUT_BASTION_ID:-}" ]; then
+elif [ -n "${INPUT_BASTION_ID}" ]; then
   export INSTANCE_ID=$INPUT_BASTION_ID
 else
   echo "Required: BASTION_NAME or BASTION_ID"
