@@ -47,7 +47,7 @@ sed -i -e "s/https:\/\/$CLUSTER_API/https:\/\/$CLUSTER_API:$PORT/" ~/.kube/confi
 
 echo "Starting session"
 nohup aws ssm start-session --target ${INSTANCE_ID} --document-name AWS-StartPortForwardingSessionToRemoteHost --parameters "{\"host\": [ \"${CLUSTER_API}\" ], \"portNumber\": [ \"443\" ], \"localPortNumber\": [ \"$PORT\" ] }" &
-output=$( kubectl "$kubectl" )
-debug "${output}"
+output=$( ./kubectl "$kubectl" )
+echo "${output}"
 sleep 10
 echo ::set-output name=ssm-out::"${output}"
