@@ -40,7 +40,7 @@ fi
 echo "Port: $PORT"
 
 echo "Update /etc/hosts"
-sudo sh -c "echo '127.0.0.1 ${CLUSTER_API}' >> /etc/hosts"
+sh -c "echo '127.0.0.1 ${CLUSTER_API}' >> /etc/hosts"
 
 echo "Update ~/.kube/config"
 sed -i -e "s/https:\/\/$CLUSTER_API/https:\/\/$CLUSTER_API:$PORT/" ~/.kube/config

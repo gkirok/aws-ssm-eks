@@ -1,6 +1,8 @@
 # Container image that runs your code
 FROM amazon/aws-cli:2.7.29
 
+RUN yum install -y jq
+
 # Copies your code file from your action repository to the filesystem path `/` of the container
 COPY entrypoint.sh /entrypoint.sh
 
