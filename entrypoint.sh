@@ -45,10 +45,6 @@ sudo sh -c "echo '127.0.0.1 ${CLUSTER_API}' >> /etc/hosts"
 echo "Update ~/.kube/config"
 sed -i -e "s/https:\/\/$CLUSTER_API/https:\/\/$CLUSTER_API:$PORT/" ~/.kube/config
 
-CLUSTER_ARN=$(aws eks describe-cluster --name $CLUSTER_NAME | jq -r '.cluster.arn')
-echo "Cluster ARN: $CLUSTER_ARN"
-kubectl config use-context $CLUSTER_ARN
-
 echo "Starting session"
 output=$( nohup aws ssm start-session --target ${INSTANCE_ID} --document-name AWS-StartPortForwardingSessionToRemoteHost --parameters "{\"host\": [ \"${CLUSTER_API}\" ], \"portNumber\": [ \"443\" ], \"localPortNumber\": [ \"$PORT\" ] }" & )
 echo "${output}"
