@@ -23,6 +23,9 @@ inputs:
   SSM_PORT:
     description: The local port used by ssm session manager
     required: false
+  kubectl:
+    description: The arguments that you want to pass through to the kubectl command
+    required: true
 outputs:
   ssm-out:
     description: The output of the aws ssm command
