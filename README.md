@@ -4,6 +4,40 @@ This action connects to eks with private endpoint using ssm session on bastion s
 
 ## Prerequisites
 
+```yaml
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "ssm",
+            "Effect": "Allow",
+            "Action": [
+                "ssm:StartSession",
+                "ssm:TerminateSession"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "eks",
+            "Effect": "Allow",
+            "Action": [
+                "eks:DescribeCluster",
+                "eks:ListClusters"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "ec2",
+            "Effect": "Allow",
+            "Action": [
+               "ec2:DescribeInstances",
+               "ec2:DescribeTags"
+            ],
+            "Resource": "*"
+       }
+    ]
+}
+```
 
 ## Inputs
 
