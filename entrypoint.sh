@@ -17,10 +17,11 @@ aws --version
 
 echo "Attempting to update kubeconfig for aws"
 
-EKS_NAME=$(aws eks update-kubeconfig --name "${CLUSTER_NAME}" 2> /dev/null);
+EKS_NAME=$(aws eks update-kubeconfig --name "${CLUSTER_NAME}" 2> /tmp/stderr);
 ret=$?
 if [ $ret -ne 0 ]; then
   echo "Error: aws eks update-kubeconfig"
+  cat /tmp/stderr
   exit $ret
 fi
 
@@ -35,10 +36,11 @@ else
 fi
 echo "InstanceId: $INSTANCE_ID";
 
-CLUSTER=$(aws eks describe-cluster --name $CLUSTER_NAME 2> /dev/null | jq -r '.cluster.endpoint' | awk -F/ '{print $3}')
+CLUSTER=$(aws eks describe-cluster --name $CLUSTER_NAME 2> /tmp/stderr)
 ret=$?
 if [ $ret -ne 0 ]; then
   echo "Error: aws eks describe-cluster"
+  cat /tmp/stderr
   exit $ret
 fi
 CLUSTER_API=$(echo "${CLUSTER}" | jq -r '.cluster.endpoint' | awk -F/ '{print $3}')
