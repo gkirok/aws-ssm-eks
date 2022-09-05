@@ -16,7 +16,13 @@ echo "aws version"
 aws --version
 
 echo "Attempting to update kubeconfig for aws"
-aws eks update-kubeconfig --name "${CLUSTER_NAME}"
+
+EKS_NAME=$(aws eks update-kubeconfig --name "${CLUSTER_NAME}" 2> /dev/null);
+ret=$?
+if [ $ret -ne 0 ]; then
+  echo "Error: aws eks update-kubeconfig"
+  exit $ret
+fi
 
 if [ -n "${BASTION_NAME}" ]; then
   echo "Bastion: $BASTION_NAME";
@@ -29,7 +35,13 @@ else
 fi
 echo "InstanceId: $INSTANCE_ID";
 
-CLUSTER_API=$(aws eks describe-cluster --name $CLUSTER_NAME | jq -r '.cluster.endpoint' | awk -F/ '{print $3}')
+CLUSTER=$(aws eks describe-cluster --name $CLUSTER_NAME 2> /dev/null | jq -r '.cluster.endpoint' | awk -F/ '{print $3}')
+ret=$?
+if [ $ret -ne 0 ]; then
+  echo "Error: aws eks describe-cluster"
+  exit $ret
+fi
+CLUSTER_API=$(echo "${CLUSTER}" | jq -r '.cluster.endpoint' | awk -F/ '{print $3}')
 echo "Cluster API: $CLUSTER_API";
 
 if [ -n "${SSM_PORT:-}" ]; then
