@@ -34,9 +34,9 @@ The aws ssm start-session command output.
 
   - name: Running ssm session
     uses: gkirok/aws-ssm-eks@v1
-      env:
-        CLUSTER_NAME: my-cluster
-        BASTION_NAME: my-bastion
+    env:
+      CLUSTER_NAME: my-cluster
+      BASTION_NAME: my-bastion
 
   - name: list pods
     shell: bash
@@ -49,11 +49,11 @@ The aws ssm start-session command output.
 ```yaml
   - name: Running ssm session
     uses: gkirok/aws-ssm-eks@v1
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_REGION: ${{ secrets.AWS_REGION }}
-        CLUSTER_NAME: my-cluster
-        BASTION_ID: id-98h3tboagua94gboa
-        SSM_PORT: 8443
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      CLUSTER_NAME: my-cluster
+      BASTION_ID: id-98h3tboagua94gboa
+      SSM_PORT: 8443
 ```
