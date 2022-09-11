@@ -64,7 +64,7 @@ nohup aws ssm start-session --target ${INSTANCE_ID} --document-name AWS-StartPor
 sleep 10
 
 echo "Running kubectl"
-runme="kubectl $cmd"
+runme="kubectl $kubectl"
 output=$( bash -c "$runme" 2> /tmp/stderr)
 ret=$?
 if [ $ret -ne 0 ]; then
