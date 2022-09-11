@@ -64,7 +64,14 @@ nohup aws ssm start-session --target ${INSTANCE_ID} --document-name AWS-StartPor
 sleep 10
 
 echo "Running kubectl"
-runme="kubectl $kubectl"
-output=$( bash -c "$runme" )
+runme="kubectl $cmd"
+output=$( bash -c "$runme" 2> /tmp/stderr)
+ret=$?
+if [ $ret -ne 0 ]; then
+  echo "Error: kubectl"
+  cat /tmp/stderr
+  echo ::set-output name=cmd-out::"$(cat /tmp/stderr)"
+  exit $ret
+fi
 echo "${output}"
-echo ::set-output name=ssm-out::"${output}"
+echo ::set-output name=cmd-out::"${output}"
