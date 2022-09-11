@@ -53,9 +53,9 @@ This action connects to eks with private endpoint using ssm session on bastion s
 
 ## Outputs
 
-## `ssm output`
+## `cmd output`
 
-The aws ssm start-session command output.
+The kubectl command output.
 
 ## Example usage
 ```yaml
@@ -79,7 +79,7 @@ The aws ssm start-session command output.
       chmod 700 kubectl
       ./kubectl get pods -A
 ```
-
+### Set BASTION_ID
 ```yaml
   - name: Running ssm session
     uses: gkirok/aws-ssm-eks@v1
