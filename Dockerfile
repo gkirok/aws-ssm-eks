@@ -6,6 +6,8 @@ RUN curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux
 
 RUN yum install -y jq session-manager-plugin.rpm
 
+RUN yum install -y net-tools procps
+
 # Copies your code file from your action repository to the filesystem path `/` of the container
 COPY entrypoint.sh /entrypoint.sh
 
