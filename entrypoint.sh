@@ -62,13 +62,15 @@ sed -i -e "s/https:\/\/$CLUSTER_API/https:\/\/$CLUSTER_API:$PORT/" ~/.kube/confi
 echo "Starting session"
 aws ssm start-session --target ${INSTANCE_ID} --document-name AWS-StartPortForwardingSessionToRemoteHost --parameters "{\"host\": [ \"${CLUSTER_API}\" ], \"portNumber\": [ \"443\" ], \"localPortNumber\": [ \"$PORT\" ] }" &
 
+sleep 10
+
 echo "Get session id"
 my_identity=$(aws sts get-caller-identity --query 'Arn' --output text)
 session_id=$(aws ssm describe-sessions --state "Active" \
     --filters "key=Owner,value=$my_identity" "key=Target,value=$instance_id" "key=Status,value=Connected" \
     --query 'Sessions[].{SessionId:SessionId,StartDate:StartDate} | reverse(sort_by(@, &StartDate)) | [0].SessionId' --output text)
 
-sleep 10
+sleep 3
 
 netstat -v 
 
