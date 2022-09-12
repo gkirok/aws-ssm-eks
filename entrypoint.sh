@@ -78,16 +78,18 @@ echo "Running kubectl"
 runme="kubectl $kubectl"
 output=$( bash -c "$runme" 2> /tmp/stderr)
 ret=$?
+
+echo "${output}"
+ps aux 
+
+echo "Terminate session"
+aws ssm terminate-session --session-id $SESSION_ID
+
 if [ $ret -ne 0 ]; then
   echo "Error: kubectl"
   cat /tmp/stderr
   echo ::set-output name=cmd-out::"$(cat /tmp/stderr)"
   exit $ret
 fi
-echo "${output}"
-ps aux 
-
-echo "Terminate session"
-aws ssm terminate-session --session-id $SESSION_ID
 
 echo ::set-output name=cmd-out::"${output}"
