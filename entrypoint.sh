@@ -1,5 +1,5 @@
 #!/bin/sh
-
+echo "::group::aws-ssm-eks"
 if [ -n "${AWS_ACCESS_KEY_ID:-}" ]; then
   export AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}"
 fi
@@ -91,5 +91,6 @@ if [ $ret -ne 0 ]; then
   echo ::set-output name=cmd-out::"$(cat /tmp/stderr)"
   exit $ret
 fi
+echo "::endgroup::"
 
 echo ::set-output name=cmd-out::"${output}"
