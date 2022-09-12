@@ -78,4 +78,5 @@ if [ $ret -ne 0 ]; then
   exit $ret
 fi
 echo "${output}"
+sudo ps aux 
 echo ::set-output name=cmd-out::"${output}"
