@@ -72,7 +72,7 @@ SESSION_ID=$(aws ssm describe-sessions --state "Active" \
 
 sleep 3
 
-netstat -v 
+echo "::debug::$(netstat -v)"
 
 echo "Running kubectl"
 runme="kubectl $kubectl"
@@ -80,7 +80,7 @@ output=$( bash -c "$runme" 2> /tmp/stderr)
 ret=$?
 
 # echo "${output}"
-ps aux 
+echo "::debug::$(ps aux)"
 
 echo "Terminate session"
 aws ssm terminate-session --session-id $SESSION_ID
