@@ -12,10 +12,10 @@ if [ -n "${AWS_REGION:-}" ]; then
   export AWS_DEFAULT_REGION="${AWS_REGION}"
 fi
 
-echo "aws version"
-aws --version
+echo "::debug::aws version"
+echo "::debug::$(aws --version)"
 
-echo "Attempting to update kubeconfig for aws"
+echo "::notice::Attempting to update kubeconfig for aws"
 
 EKS_NAME=$(aws eks update-kubeconfig --name "${CLUSTER_NAME}" 2> /tmp/stderr);
 ret=$?
@@ -26,7 +26,7 @@ if [ $ret -ne 0 ]; then
 fi
 
 if [ -n "${BASTION_NAME}" ]; then
-  echo "Bastion: $BASTION_NAME";
+  echo "::debug::Bastion: $BASTION_NAME";
   export INSTANCE_ID=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=${BASTION_NAME}" "Name=instance-state-code,Values=16" --output text --query 'Reservations[*].Instances[*].InstanceId')
 elif [ -n "${BASTION_ID}" ]; then
   export INSTANCE_ID=$BASTION_ID
@@ -34,7 +34,7 @@ else
   echo "Required: BASTION_NAME or BASTION_ID"
   exit 1
 fi
-echo "InstanceId: $INSTANCE_ID";
+echo "::debug::InstanceId: $INSTANCE_ID";
 
 CLUSTER=$(aws eks describe-cluster --name $CLUSTER_NAME 2> /tmp/stderr)
 ret=$?
@@ -44,27 +44,27 @@ if [ $ret -ne 0 ]; then
   exit $ret
 fi
 CLUSTER_API=$(echo "${CLUSTER}" | jq -r '.cluster.endpoint' | awk -F/ '{print $3}')
-echo "Cluster API: $CLUSTER_API";
+echo "::debug::Cluster API: $CLUSTER_API";
 
 if [ -n "${SSM_PORT:-}" ]; then
   PORT=$SSM_PORT
 else
   PORT="20$((570 + $RANDOM % 130))"
 fi
-echo "Port: $PORT"
+echo "::debug::Port: $PORT"
 
-echo "Update /etc/hosts"
+echo "::notice::Update /etc/hosts"
 sh -c "echo '127.0.0.1 ${CLUSTER_API}' >> /etc/hosts"
 
-echo "Update ~/.kube/config"
+echo "::notice::Update ~/.kube/config"
 sed -i -e "s/https:\/\/$CLUSTER_API/https:\/\/$CLUSTER_API:$PORT/" ~/.kube/config
 
-echo "Starting session"
+echo "::notice::Starting session"
 aws ssm start-session --target ${INSTANCE_ID} --document-name AWS-StartPortForwardingSessionToRemoteHost --parameters "{\"host\": [ \"${CLUSTER_API}\" ], \"portNumber\": [ \"443\" ], \"localPortNumber\": [ \"$PORT\" ] }" &
 
 sleep 10
 
-echo "Get session id"
+echo "::notice::Get session id"
 MY_IDENTITY=$(aws sts get-caller-identity --query 'Arn' --output text)
 SESSION_ID=$(aws ssm describe-sessions --state "Active" \
     --filters "key=Owner,value=$MY_IDENTITY" "key=Target,value=$INSTANCE_ID" "key=Status,value=Connected" \
@@ -72,17 +72,17 @@ SESSION_ID=$(aws ssm describe-sessions --state "Active" \
 
 sleep 3
 
-echo "::debug::$(netstat -v)"
+# netstat -v
 
-echo "Running kubectl"
+echo "::notice::Running kubectl"
 runme="kubectl $kubectl"
 output=$( bash -c "$runme" 2> /tmp/stderr)
 ret=$?
 
 # echo "${output}"
-echo "::debug::$(ps aux)"
+# ps aux
 
-echo "Terminate session"
+echo "::notice::Terminate session"
 aws ssm terminate-session --session-id $SESSION_ID
 
 if [ $ret -ne 0 ]; then
