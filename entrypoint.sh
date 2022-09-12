@@ -65,9 +65,9 @@ aws ssm start-session --target ${INSTANCE_ID} --document-name AWS-StartPortForwa
 sleep 10
 
 echo "Get session id"
-my_identity=$(aws sts get-caller-identity --query 'Arn' --output text)
-session_id=$(aws ssm describe-sessions --state "Active" \
-    --filters "key=Owner,value=$my_identity" "key=Target,value=$instance_id" "key=Status,value=Connected" \
+MY_IDENTITY=$(aws sts get-caller-identity --query 'Arn' --output text)
+SESSION_ID=$(aws ssm describe-sessions --state "Active" \
+    --filters "key=Owner,value=$MY_IDENTITY" "key=Target,value=$INSTANCE_ID" "key=Status,value=Connected" \
     --query 'Sessions[].{SessionId:SessionId,StartDate:StartDate} | reverse(sort_by(@, &StartDate)) | [0].SessionId' --output text)
 
 sleep 3
@@ -88,6 +88,6 @@ echo "${output}"
 ps aux 
 
 echo "Terminate session"
-aws ssm terminate-session --session-id $session_id
+aws ssm terminate-session --session-id $SESSION_ID
 
 echo ::set-output name=cmd-out::"${output}"
