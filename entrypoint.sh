@@ -45,7 +45,10 @@ if [ $ret -ne 0 ]; then
 fi
 CLUSTER_API=$(echo "${CLUSTER}" | jq -r '.cluster.endpoint' | awk -F/ '{print $3}')
 echo "Cluster API: $CLUSTER_API";
-netstat -tulpn
+
+netstat -v 
+sudo netstat -tulpn
+
 if [ -n "${SSM_PORT:-}" ]; then
   PORT=$SSM_PORT
 else
