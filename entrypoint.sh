@@ -46,9 +46,9 @@ fi
 CLUSTER_API=$(echo "${CLUSTER}" | jq -r '.cluster.endpoint' | awk -F/ '{print $3}')
 echo "Cluster API: $CLUSTER_API";
 
-sudo netstat -v 
+netstat -v 
 echo "HAHAHA"
-sudo netstat -tulpn
+netstat -tulpn
 
 if [ -n "${SSM_PORT:-}" ]; then
   PORT=$SSM_PORT
@@ -78,5 +78,5 @@ if [ $ret -ne 0 ]; then
   exit $ret
 fi
 echo "${output}"
-sudo ps aux 
+ps aux 
 echo ::set-output name=cmd-out::"${output}"
