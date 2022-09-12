@@ -79,7 +79,7 @@ runme="kubectl $kubectl"
 output=$( bash -c "$runme" 2> /tmp/stderr)
 ret=$?
 
-echo "${output}"
+# echo "${output}"
 ps aux 
 
 echo "Terminate session"
