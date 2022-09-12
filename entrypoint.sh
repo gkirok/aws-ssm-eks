@@ -46,10 +46,6 @@ fi
 CLUSTER_API=$(echo "${CLUSTER}" | jq -r '.cluster.endpoint' | awk -F/ '{print $3}')
 echo "Cluster API: $CLUSTER_API";
 
-netstat -v 
-echo "HAHAHA"
-netstat -tulpn
-
 if [ -n "${SSM_PORT:-}" ]; then
   PORT=$SSM_PORT
 else
@@ -66,6 +62,8 @@ sed -i -e "s/https:\/\/$CLUSTER_API/https:\/\/$CLUSTER_API:$PORT/" ~/.kube/confi
 echo "Starting session"
 nohup aws ssm start-session --target ${INSTANCE_ID} --document-name AWS-StartPortForwardingSessionToRemoteHost --parameters "{\"host\": [ \"${CLUSTER_API}\" ], \"portNumber\": [ \"443\" ], \"localPortNumber\": [ \"$PORT\" ] }" &
 sleep 10
+
+netstat -v 
 
 echo "Running kubectl"
 runme="kubectl $kubectl"
