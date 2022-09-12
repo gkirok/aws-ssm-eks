@@ -6,6 +6,12 @@ RUN curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux
 
 RUN yum install -y jq session-manager-plugin.rpm
 
+RUN apt-get update \
+  && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    net-tools \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
+
 # Copies your code file from your action repository to the filesystem path `/` of the container
 COPY entrypoint.sh /entrypoint.sh
 
