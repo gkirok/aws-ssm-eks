@@ -73,7 +73,6 @@ do
 
   echo "::notice::Starting session"
   aws ssm start-session --target ${INSTANCE_ID} --document-name AWS-StartPortForwardingSessionToRemoteHost --parameters "{\"host\": [ \"${CLUSTER_API}\" ], \"portNumber\": [ \"443\" ], \"localPortNumber\": [ \"$PORT\" ] }" &
-
   sleep 10
 
   echo "::notice::Get session id"
@@ -81,19 +80,13 @@ do
   SESSION_ID=$(aws ssm describe-sessions --state "Active" \
       --filters "key=Owner,value=$MY_IDENTITY" "key=Target,value=$INSTANCE_ID" "key=Status,value=Connected" \
       --query 'Sessions[].{SessionId:SessionId,StartDate:StartDate} | reverse(sort_by(@, &StartDate)) | [0].SessionId' --output text)
-
   sleep 3
-
-  # netstat -v
 
   echo "::notice::Running kubectl"
   runme="kubectl $kubectl_cmd"
   output=$( bash -c "$runme" 2> /tmp/stderr)
   kubectl_ret=$?
-
   echo "::debug::kubectl ret: $kubectl_ret"
-  # echo "${output}"
-  # ps aux
 
   echo "::notice::Terminate session"
   aws ssm terminate-session --session-id $SESSION_ID
@@ -111,9 +104,10 @@ do
     fi
   fi
 
+  echo "::endgroup::"
+
   if [ $kubectl_ret -eq 0 ] || [ $refused -eq 0 ]; then
     break
   fi
-  echo "::endgroup::"
 done
 echo ::set-output name=cmd-out::"${output}"
