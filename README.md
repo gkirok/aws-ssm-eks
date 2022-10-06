@@ -66,18 +66,12 @@ The kubectl command output.
       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       aws-region: ${{ env.region }}
 
-  - name: Running ssm session
-    uses: gkirok/aws-ssm-eks@v1
+  - name: List pods
+    uses: gkirok/aws-ssm-eks@v2
     env:
-      CLUSTER_NAME: my-cluster
-      BASTION_NAME: my-bastion
-
-  - name: list pods
-    shell: bash
-    run: |
-      curl -LO "https://dl.k8s.io/release/v1.21.9/bin/linux/amd64/kubectl"
-      chmod 700 kubectl
-      ./kubectl get pods -A
+      CLUSTER_NAME: "my-cluster"
+      BASTION_NAME: "my-bastion"
+      kubectl_cmd: "get pods -A"
 ```
 ### Set BASTION_ID
 ```yaml
