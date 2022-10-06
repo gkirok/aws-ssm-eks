@@ -41,9 +41,6 @@ else
 fi
 echo "::debug::InstanceId: $INSTANCE_ID";
 
-echo "::notice::Update /etc/hosts"
-sh -c "echo '127.0.0.1 ${CLUSTER_API}' >> /etc/hosts"
-
 CLUSTER=$(aws eks describe-cluster --name $CLUSTER_NAME 2> /tmp/stderr)
 ret=$?
 if [ $ret -ne 0 ]; then
@@ -53,6 +50,9 @@ if [ $ret -ne 0 ]; then
 fi
 CLUSTER_API=$(echo "${CLUSTER}" | jq -r '.cluster.endpoint' | awk -F/ '{print $3}')
 echo "::debug::Cluster API: $CLUSTER_API";
+
+echo "::notice::Update /etc/hosts"
+sh -c "echo '127.0.0.1 ${CLUSTER_API}' >> /etc/hosts"
 
 for i in 1 2 3
 do
