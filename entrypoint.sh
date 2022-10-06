@@ -41,8 +41,8 @@ else
 fi
 echo "::debug::InstanceId: $INSTANCE_ID";
 
-#echo "::notice::Update /etc/hosts"
-#sh -c "echo '127.0.0.1 ${CLUSTER_API}' >> /etc/hosts"
+echo "::notice::Update /etc/hosts"
+sh -c "echo '127.0.0.1 ${CLUSTER_API}' >> /etc/hosts"
 
 CLUSTER=$(aws eks describe-cluster --name $CLUSTER_NAME 2> /tmp/stderr)
 ret=$?
@@ -68,9 +68,7 @@ do
   fi
 
   echo "::notice::Update ~/.kube/config"
-  cat ~/.kube/config
   sed -i -e "s/https:\/\/$CLUSTER_API/https:\/\/$CLUSTER_API:$PORT/" ~/.kube/config
-  cat ~/.kube/config
 
   echo "::notice::Starting session"
   aws ssm start-session --target ${INSTANCE_ID} --document-name AWS-StartPortForwardingSessionToRemoteHost --parameters "{\"host\": [ \"${CLUSTER_API}\" ], \"portNumber\": [ \"443\" ], \"localPortNumber\": [ \"$PORT\" ] }" &
