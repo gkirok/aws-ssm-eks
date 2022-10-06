@@ -68,7 +68,9 @@ do
   fi
 
   echo "::notice::Update ~/.kube/config"
+  cat ~/.kube/config
   sed -i -e "s/https:\/\/$CLUSTER_API/https:\/\/$CLUSTER_API:$PORT/" ~/.kube/config
+  cat ~/.kube/config
 
   echo "::notice::Starting session"
   aws ssm start-session --target ${INSTANCE_ID} --document-name AWS-StartPortForwardingSessionToRemoteHost --parameters "{\"host\": [ \"${CLUSTER_API}\" ], \"portNumber\": [ \"443\" ], \"localPortNumber\": [ \"$PORT\" ] }" &
