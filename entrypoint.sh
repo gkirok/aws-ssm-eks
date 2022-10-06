@@ -11,7 +11,7 @@ function rand_port() {
   echo "::debug::Port: $PORT"
 }
 
-echo "::group::aws-ssm-eks"
+echo "::group::aws-ssm-eks init"
 if [ -n "${AWS_ACCESS_KEY_ID:-}" ]; then
   export AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}"
 fi
@@ -53,9 +53,10 @@ echo "::debug::Cluster API: $CLUSTER_API";
 
 echo "::notice::Update /etc/hosts"
 sh -c "echo '127.0.0.1 ${CLUSTER_API}' >> /etc/hosts"
-
+echo "::endgroup::"
 for i in 1 2 3
 do
+  echo "::group::aws-ssm-eks $i attempt"
   rand_port
   echo $PORT
 
@@ -113,6 +114,6 @@ do
   if [ $kubectl_ret -eq 0 ] || [ $refused -eq 0 ]; then
     break
   fi
+  echo "::endgroup::"
 done
-echo "::endgroup::"
 echo ::set-output name=cmd-out::"${output}"
