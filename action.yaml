@@ -23,7 +23,7 @@ inputs:
   SSM_PORT:
     description: The local port used by ssm session manager
     required: false
-  kubectl:
+  kubectl_cmd:
     description: The arguments that you want to pass through to the kubectl command
     required: true
 outputs:
