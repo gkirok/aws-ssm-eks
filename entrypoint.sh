@@ -82,32 +82,62 @@ do
       --query 'Sessions[].{SessionId:SessionId,StartDate:StartDate} | reverse(sort_by(@, &StartDate)) | [0].SessionId' --output text)
   sleep 3
 
-  echo "::notice::Running kubectl"
-  runme="kubectl $kubectl_cmd"
-  output=$( bash -c "$runme" 2> /tmp/stderr)
-  kubectl_ret=$?
-  echo "::debug::kubectl ret: $kubectl_ret"
+  if [ -n "${kubectl_cmd}" ]; then
+    echo "::notice::Running kubectl"
+    runme="kubectl $kubectl_cmd"
+    output=$( bash -c "$runme" 2> /tmp/stderr)
+    kubectl_ret=$?
+    echo "::debug::kubectl ret: $kubectl_ret"
 
-  echo "::notice::Terminate session"
-  aws ssm terminate-session --session-id $SESSION_ID
+    echo "::notice::Terminate session"
+    aws ssm terminate-session --session-id $SESSION_ID
 
-  if [ $kubectl_ret -ne 0 ]; then
-    echo "Error: kubectl"
-    cat /tmp/stderr
-    echo ::set-output name=cmd-out::"$(cat /tmp/stderr)"
+    if [ $kubectl_ret -ne 0 ]; then
+      echo "Error: kubectl"
+      cat /tmp/stderr
+      echo ::set-output name=cmd-out::"$(cat /tmp/stderr)"
 
-    if grep -q "was refused" /tmp/stderr
-    then
-      refused=1
-    else
-      refused=0
+      if grep -q "was refused" /tmp/stderr
+      then
+        refused=1
+      else
+        refused=0
+      fi
+    fi
+    echo "::endgroup::"
+
+    if [ $kubectl_ret -eq 0 ] || [ $refused -eq 0 ]; then
+      break
     fi
   fi
 
-  echo "::endgroup::"
+  if [ -n "${cmds}" ]; then
+    echo "::notice::Running bash commands"
+    output=$( bash -c "$cmds" 2> /tmp/stderr)
+    cmds_ret=$?
+    echo "::debug::cmds ret: $cmds_ret"
 
-  if [ $kubectl_ret -eq 0 ] || [ $refused -eq 0 ]; then
-    break
+    echo "::notice::Terminate session"
+    aws ssm terminate-session --session-id $SESSION_ID
+
+    if [ $cmds_ret -ne 0 ]; then
+      echo "Error: cmds"
+      cat /tmp/stderr
+      echo ::set-output name=cmd-out::"$(cat /tmp/stderr)"
+
+      if grep -q "was refused" /tmp/stderr
+      then
+        refused=1
+      else
+        refused=0
+      fi
+    fi
+    echo "::endgroup::"
+
+    if [ $cmds_ret -eq 0 ] || [ $refused -eq 0 ]; then
+      break
+    fi
   fi
+
 done
 echo ::set-output name=cmd-out::"${output}"
