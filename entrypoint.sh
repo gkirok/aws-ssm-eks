@@ -109,9 +109,8 @@ do
     if [ $kubectl_ret -eq 0 ] || [ $refused -eq 0 ]; then
       break
     fi
-  fi
 
-  if [ -n "${cmds}" ]; then
+  elif [ -n "${cmds}" ]; then
     echo "::notice::Running bash commands"
     output=$( bash -c "$cmds" 2> /tmp/stderr)
     cmds_ret=$?
@@ -137,6 +136,9 @@ do
     if [ $cmds_ret -eq 0 ] || [ $refused -eq 0 ]; then
       break
     fi
+  else
+    echo "::notice::Empty commands"
+    break
   fi
 
 done
