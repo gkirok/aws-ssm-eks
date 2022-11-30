@@ -92,10 +92,6 @@ else
   exit 1
 fi
 
-# echo "::notice::Terminate session"
-# aws ssm terminate-session --session-id "$SESSION_ID"
-# echo "::endgroup::"
-
 if [ $ret -ne 0 ]; then
   echo "::error::Error executing commands"
   cat /tmp/stderr
